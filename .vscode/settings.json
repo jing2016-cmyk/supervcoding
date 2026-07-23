@@ -1,0 +1,7 @@
+{
+  "python.defaultInterpreterPath": "/workspaces/supervcoding/.venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.analysis.autoImportCompletions": true
+}

@@ -50,5 +50,19 @@ class TestCardSweets(unittest.TestCase):
         self.assertEqual(int(counts[0]), len(lines[2].split()))
         self.assertEqual(int(counts[1]), len(lines[3].split()))
 
+    def test_unknown_cards(self):
+        input_data = "4\no o o o\n"
+        output = self.run_program(input_data)
+        lines = output.splitlines()
+        self.assertEqual(lines[0], "NO")
+        self.assertEqual(lines[1], "0 0")
+
+    def test_unknown_cards_legacy_marker(self):
+        input_data = "4\n-1 -1 -1 -1\n"
+        output = self.run_program(input_data)
+        lines = output.splitlines()
+        self.assertEqual(lines[0], "NO")
+        self.assertEqual(lines[1], "0 0")
+
 if __name__ == "__main__":
     unittest.main()

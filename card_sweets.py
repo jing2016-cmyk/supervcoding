@@ -7,30 +7,41 @@ def parse_tokens(tokens: list[str], n: int) -> list[int] | None:
     if not tokens:
         return []
 
-    if tokens[-1] == "...":
-        if len(tokens) < 2:
-            return None
-        try:
-            fill_value = int(tokens[-2])
-        except ValueError:
-            return None
-        values = []
-        for token in tokens[:-1]:
-            if token == "...":
-                return None
+    normalized = []
+    for token in tokens:
+        if token.lower() == "o" or token == "-1":
+            normalized.append("0")
+        elif token == "...":
+            normalized.append("...")
+        else:
             try:
-                values.append(int(token))
+                int(token)
+                normalized.append(token)
             except ValueError:
                 return None
+
+    if normalized[-1] == "...":
+        if len(normalized) < 2:
+            return None
+        fill_value = normalized[-2]
+        values = []
+        for token in normalized[:-1]:
+            if token == "...":
+                return None
+            values.append(int(token))
         if len(values) > n:
             return None
-        values.extend([fill_value] * (n - len(values)))
+        values.extend([int(fill_value)] * (n - len(values)))
         return values
 
     try:
-        return [int(token) for token in tokens]
+        values = [int(token) for token in normalized]
     except ValueError:
         return None
+
+    if len(values) > n:
+        return None
+    return values
 
 
 def parse_input() -> tuple[int, list[int]] | None:

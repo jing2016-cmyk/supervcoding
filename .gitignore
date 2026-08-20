@@ -9,3 +9,7 @@ __pycache__/
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
+
+2025CCCSeniorTestData/
+__MACOSX/
+*.zip

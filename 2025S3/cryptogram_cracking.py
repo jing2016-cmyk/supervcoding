@@ -1,15 +1,18 @@
+import sys
+
+
 def find_cipher_character(s, c):
     """
     Find the c-th character in an infinitely repeating RLE-encoded pattern.
-    
+
     The pattern is encoded using Run-Length Encoding (RLE), where consecutive
     repeated characters are replaced with the character followed by its count.
     For example, "aaaabccdddd" becomes "a4b1c2d4".
-    
+
     Args:
         s: RLE-encoded pattern string (e.g., "a4b1c2d10")
         c: Index of the character to find (0-indexed)
-    
+
     Returns:
         The character at index c in the infinitely repeating pattern
     """
@@ -25,28 +28,35 @@ def find_cipher_character(s, c):
             i += 1
         count = int(num_str)
         pattern.append((char, count))
-    
+
     # Calculate the total length of one pattern cycle
-    pattern_length = sum(count for char, count in pattern)
-    
+    pattern_length = sum(count for _, count in pattern)
+
     # Find the position within a single pattern using modulo
     position_in_pattern = c % pattern_length
-    
+
     # Find the character at that position
     current_pos = 0
     for char, count in pattern:
         if current_pos + count > position_in_pattern:
             return char
         current_pos += count
-    
+
     return None
 
 
+def read_input():
+    """Read one encoded pattern and one index from stdin regardless of line breaks."""
+    tokens = sys.stdin.read().split()
+    if len(tokens) < 2:
+        raise ValueError("Expected an RLE pattern and a character index in the input.")
+
+    s = tokens[0]
+    c = int(tokens[-1])
+    return s, c
+
+
 if __name__ == "__main__":
-    # Read input
-    s = input().strip()
-    c = int(input().strip())
-    
-    # Find and output the character
+    s, c = read_input()
     result = find_cipher_character(s, c)
     print(result)

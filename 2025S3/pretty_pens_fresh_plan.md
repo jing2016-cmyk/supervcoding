@@ -1,82 +1,55 @@
-# Pretty Pens: Simple Solution Plan
+# Pretty Pens: ELI5 Solution Plan
 
-## The basic idea
+## What's the problem? 🖍️
 
-For every colour, remember only its two most-pretty pens:
+Imagine you have pens in different colors: red pens, blue pens, green pens, etc.
 
-- `best[colour]`: the pen normally chosen;
-- `backup[colour]`: the pen used if `best[colour]` is moved.
+For each color, we pick the PRETTIEST pen of that color. Then we add up how pretty all the picked pens are.
 
-Without changing a pen, the score is simply:
+**BUT** we can move ONE pen to a different color to make the total prettier. What's the best we can do?
 
-`sum(best[colour])`
+## How to solve it 🎯
 
-Changing a pen can only affect the colour it leaves and the colour it enters.
-That means all other colours keep their current best pen.
+### Step 1: Pick the prettiest pen for each color
 
-```mermaid
-flowchart LR
-   A[Choose best pen for each colour] --> B[Calculate normal total]
-   B --> C[Try one colour change]
-   C --> D[Use backup for the old colour]
-   C --> E[Compare moved pen with new colour's best]
-   D --> F[Keep the largest total]
-   E --> F
+- Red pens: pick the nicest red pen
+- Blue pens: pick the nicest blue pen
+- Green pens: pick the nicest green pen
+- Add up their prettiness = **Normal Score**
+
+### Step 2: What if we move ONE pen?
+
+For example, what if we take a really pretty blue pen and make it a red pen?
+
+- Red pens lose one pretty pen (if we move it), BUT get the blue pen instead
+- Blue pens lose the blue pen, BUT get their second-nicest pen instead
+- All other colors stay the same
+
+### Step 3: Is the move worth it?
+
+Compare the new score with the normal score. Pick whichever is bigger.
+
+```
+Normal: Red (10) + Blue (8) + Green (5) = 23
+After moving blue-9 to red: Red (10+9) + Blue (8→6) + Green (5) = 28
+Better! Use 28.
 ```
 
-## Try one move
+## What about updates? 📝
 
-For a possible move from colour `A` to colour `B`:
+Sometimes a pen changes:
 
-1. Remove the moved pen's old contribution from colour `A`.
-2. Fill colour `A` with its backup, if it has one.
-3. Add the moved pen to colour `B`; it matters only if it is prettier than
-  `best[B]`.
-4. Compare this score with the score before the move.
+- It gets a different color
+- It becomes prettier/uglier
 
-The move is useful only when its improvement is positive. Trying every pen
-directly would be too slow, so the implementation should keep the few largest
-candidate values globally and avoid checking every colour after every query.
+When that happens, just recalculate which pens are prettiest for each color, and try the best move again.
 
-## Handle updates
+## Why does this work?
 
-Each query changes one pen:
+If we're only moving ONE pen, only the color it LEFT and the color it WENT TO can change their picked pen. Everything else stays the same. So we just need to check: "What's the best single move?" and compare it to "no move at all."
 
-- If its colour changes, refresh the old and new colours.
-- If its prettiness changes, refresh its current colour.
+## Quick test ideas
 
-After refreshing, output the new answer. The first answer is printed before
-any queries, then one answer is printed after each query.
-
-For fast updates, use heaps with lazy deletion. When a pen changes, add its
-new version to the appropriate heap and ignore old versions when they reach
-the top. Each colour's heap needs to provide its best two valid pens.
-
-## Correctness argument
-
-The normal score is optimal when no pen is changed because each colour chooses
-its prettiest pen independently. If one pen is changed, only its old colour
-and new colour can have different choices; every other colour still uses its
-old best pen. Therefore checking the best possible move for each affected pair
-of colours, together with the no-change option, checks every possible answer.
-
-## Testing plan
-
-Check:
-
-- one colour;
-- a colour with only one pen;
-- equal prettiness values;
-- moving a pen to its current colour;
-- changing the same pen repeatedly;
-- an empty colour;
-- a move that makes the answer worse.
-
-For small random cases, compare the fast solution with a brute-force version
-that tries every possible moved pen and recomputes the score from scratch.
-
-## Target complexity
-
-Refreshing a colour takes amortized `O(log n)` time with heaps. A query changes
-at most two colours, so the target is `O(log n)` amortized time per query and
-`O(n + q)` memory, where `q` is the number of queries.
+- What if there's only 1 color? (Can't move anything useful)
+- What if a color only has 1 pen? (Moving it removes that color's score)
+- What if moving a pen makes things worse? (We don't do it)
